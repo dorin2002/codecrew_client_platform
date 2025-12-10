@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: codecrew-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: codecrew
+      POSTGRES_PASSWORD: codecrew_local
+      POSTGRES_DB: codecrew_portal
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codecrew"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codecrew-network
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    container_name: codecrew-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: codecrew
+      DB_PASSWORD: codecrew_local
+      DB_NAME: codecrew_portal
+      FRONTEND_URL: http://localhost:3000
+      JWT_SECRET: dev-secret-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/src:/workspace/apps/api/src
+      - ./packages/shared/src:/workspace/packages/shared/src
+    networks:
+      - codecrew-network
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: codecrew-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web/app:/workspace/apps/web/app
+      - ./packages/shared/src:/workspace/packages/shared/src
+    networks:
+      - codecrew-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: codecrew-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - codecrew-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  codecrew-network:
+    driver: bridge

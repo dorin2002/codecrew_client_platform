@@ -1,0 +1,27 @@
+{
+  "name": "codecrew-portal",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "migration:generate": "cd apps/api && pnpm run migration:generate",
+    "migration:run": "cd apps/api && pnpm run migration:run",
+    "migration:revert": "cd apps/api && pnpm run migration:revert",
+    "seed": "cd apps/api && pnpm run seed",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "turbo": "^2.6.3",
+    "typescript": "^5.9.3"
+  }
+}
