@@ -17,5 +17,8 @@ RUN pnpm install --filter api... --frozen-lockfile
 COPY apps/api ./apps/api
 COPY packages/shared ./packages/shared
 
+# Build shared package
+RUN pnpm --filter @codecrew/shared run build
+
 EXPOSE 4000
 CMD ["pnpm", "--filter", "api", "run", "start:dev"]

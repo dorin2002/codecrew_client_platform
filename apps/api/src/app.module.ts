@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthModule } from './modules/health/health.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { HealthModule } from './modules/health/health.module';
       logging: process.env.NODE_ENV === 'development',
     }),
     HealthModule,
+    OrganizationsModule,
   ],
 })
 export class AppModule {}
