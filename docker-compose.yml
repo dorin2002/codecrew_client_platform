@@ -61,6 +61,8 @@ services:
       - api
     volumes:
       - ./apps/web/app:/workspace/apps/web/app
+      - ./apps/web/components:/workspace/apps/web/components
+      - ./apps/web/lib:/workspace/apps/web/lib
       - ./packages/shared/src:/workspace/packages/shared/src
     networks:
       - codecrew-network
