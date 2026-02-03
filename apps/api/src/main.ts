@@ -15,8 +15,12 @@ async function bootstrap() {
   app.use(helmet());
 
   // CORS
+  const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((url) => url.trim())
+    : ['http://localhost:3000'];
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
   });
 
@@ -39,8 +43,8 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const port = process.env.PORT || 4000;
-  await app.listen(port);
-  console.log(`🚀 API running on http://localhost:${port}/api`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 API running on port ${port}`);
 }
 
 bootstrap();
